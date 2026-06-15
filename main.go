@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"fmt"
-	"github.com/Eng-Moaz/RSSAggregator/interal/config"
+	"github.com/Eng-Moaz/RSSAggregator/internal/config"
 )
 
 func main(){
