@@ -40,9 +40,9 @@ func Read() (Config, error) {
 	return config, nil
 }
 
-func (c *Config) SetUser(username string){
+func (c *Config) SetUser(username string) error {
 	c.USERNAME = username
-	write(*c)
+	return write(*c)
 }
 
 
@@ -63,7 +63,6 @@ func write(cfg Config) error{
 	}
 	return nil
 }
-
 
 
 
