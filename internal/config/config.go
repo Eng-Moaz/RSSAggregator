@@ -45,7 +45,6 @@ func (c *Config) SetUser(username string) error {
 	return write(*c)
 }
 
-
 func write(cfg Config) error{
 	jsonDir, err := getConfigPath()
 	if err != nil{

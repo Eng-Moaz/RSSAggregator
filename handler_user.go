@@ -1,7 +1,12 @@
 package main
 
-import(
+import (
+	"context"
 	"fmt"
+	"time"
+
+	"github.com/Eng-Moaz/RSSAggregator/internal/database"
+	"github.com/google/uuid"
 )
 
 func HandlerLogin(s *state, cmd Command) error{
@@ -12,7 +17,11 @@ func HandlerLogin(s *state, cmd Command) error{
 		return fmt.Errorf("username is required")
 	}
 	name := cmd.Args[0]
-	err := s.cfg.SetUser(name)
+	_, err := s.db.GetUser(context.Background(), name)
+	if err != nil{
+		return fmt.Errorf("user doesn't exist")
+	}
+	err = s.cfg.SetUser(name)
 	if err != nil{
 		return fmt.Errorf("Couldn't set the username to %v", name)
 	}
@@ -20,3 +29,17 @@ func HandlerLogin(s *state, cmd Command) error{
 	return nil	
 }
 
+func handlerRegister(s *state, cmd Command) error {
+	if len(cmd.Args) == 0{
+		return fmt.Errorf("Invalid arguments")
+	}
+	params := database.CreateUserParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name: cmd.Args[0],
+	}
+	s.db.CreateUser(context.Background(), params)
+	fmt.Printf("User was created with an id of %v and name of %v\n", params.ID, params.Name)
+	return nil
+}
