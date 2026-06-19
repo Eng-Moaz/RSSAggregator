@@ -39,7 +39,11 @@ func handlerRegister(s *state, cmd Command) error {
 		UpdatedAt: time.Now(),
 		Name: cmd.Args[0],
 	}
-	s.db.CreateUser(context.Background(), params)
+	_, err := s.db.CreateUser(context.Background(), params)
+	if err != nil{
+		return fmt.Errorf("Failed to create user")
+	}
+	s.cfg.SetUser(params.Name)
 	fmt.Printf("User was created with an id of %v and name of %v\n", params.ID, params.Name)
 	return nil
 }
