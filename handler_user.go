@@ -29,7 +29,7 @@ func HandlerLogin(s *state, cmd Command) error{
 	return nil	
 }
 
-func handlerRegister(s *state, cmd Command) error {
+func HandlerRegister(s *state, cmd Command) error {
 	if len(cmd.Args) == 0{
 		return fmt.Errorf("Invalid arguments")
 	}
@@ -45,5 +45,29 @@ func handlerRegister(s *state, cmd Command) error {
 	}
 	s.cfg.SetUser(params.Name)
 	fmt.Printf("User was created with an id of %v and name of %v\n", params.ID, params.Name)
+	return nil
+}
+
+func HandlerReset(s *state, cmd Command) error{
+	err := s.db.Reset(context.Background())	
+	if err != nil{
+		return fmt.Errorf("Failed to reset")
+	}
+	fmt.Println("Successfully reset the table")
+	return nil
+}
+
+func HandlerUsers(s *state, cmd Command) error {
+	names, err := s.db.ListNames(context.Background())	
+	if err != nil{
+		return fmt.Errorf("Failed to list names")
+	}
+	for _, name := range names{
+		if name == s.cfg.USERNAME{
+			fmt.Printf("* %v (current)\n", name)
+		}else{
+			fmt.Printf("* %v\n", name)
+		}
+	}
 	return nil
 }

@@ -34,7 +34,9 @@ func main(){
 		commands: make(map[string]func(*state, Command) error),
 	}
 	cmds.register("login", HandlerLogin)
-	cmds.register("register", handlerRegister)
+	cmds.register("register", HandlerRegister)
+	cmds.register("reset", HandlerReset)
+	cmds.register("users", HandlerUsers)
 	
 	if len(os.Args) < 2 {
 		log.Fatal("Error in arguments length")
