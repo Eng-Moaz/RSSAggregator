@@ -37,6 +37,8 @@ func main(){
 	cmds.register("register", HandlerRegister)
 	cmds.register("reset", HandlerReset)
 	cmds.register("users", HandlerUsers)
+	cmds.register("agg", HandlerAgg)
+	cmds.register("addfeed", HandlerAddFeed)
 	
 	if len(os.Args) < 2 {
 		log.Fatal("Error in arguments length")

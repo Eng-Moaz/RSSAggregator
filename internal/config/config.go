@@ -64,4 +64,3 @@ func write(cfg Config) error{
 }
 
 
-
