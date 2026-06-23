@@ -107,6 +107,50 @@ func (q *Queries) GetUser(ctx context.Context, name string) (User, error) {
 	return i, err
 }
 
+const getUsername = `-- name: GetUsername :one
+SELECT name FROM users WHERE id = $1
+`
+
+func (q *Queries) GetUsername(ctx context.Context, id uuid.UUID) (string, error) {
+	row := q.db.QueryRowContext(ctx, getUsername, id)
+	var name string
+	err := row.Scan(&name)
+	return name, err
+}
+
+const listFeeds = `-- name: ListFeeds :many
+SELECT name, url, user_id FROM feeds
+`
+
+type ListFeedsRow struct {
+	Name   string
+	Url    string
+	UserID uuid.UUID
+}
+
+func (q *Queries) ListFeeds(ctx context.Context) ([]ListFeedsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listFeeds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFeedsRow
+	for rows.Next() {
+		var i ListFeedsRow
+		if err := rows.Scan(&i.Name, &i.Url, &i.UserID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listNames = `-- name: ListNames :many
 SELECT name FROM users
 `

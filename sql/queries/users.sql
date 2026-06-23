@@ -29,3 +29,9 @@ VALUES (
 	$6
 )
 RETURNING *;
+
+-- name: ListFeeds :many
+SELECT name, url, user_id FROM feeds;
+
+-- name: GetUsername :one
+SELECT name FROM users WHERE id = $1;

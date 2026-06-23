@@ -110,3 +110,20 @@ func HandlerAddFeed(s *state, cmd Command) error {
 
 	return nil
 }
+
+func HandlerListFeeds(s *state, cmd Command) error {
+	feedList, err := s.db.ListFeeds(context.Background())
+	if err != nil{
+		return fmt.Errorf("Failed to get feeds list: %v", err)
+	}	
+
+	for _, feed := range feedList{
+		name, err := s.db.GetUsername(context.Background(), feed.UserID)
+		if err != nil{
+			return fmt.Errorf("failed to get name of the user: %v", err)
+		}
+		fmt.Printf("%v posted a feed with the title %v. Link: %v\n", name, feed.Name, feed.Url)
+	}
+	return nil
+}
+

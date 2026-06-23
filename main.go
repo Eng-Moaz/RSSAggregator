@@ -39,6 +39,7 @@ func main(){
 	cmds.register("users", HandlerUsers)
 	cmds.register("agg", HandlerAgg)
 	cmds.register("addfeed", HandlerAddFeed)
+	cmds.register("feeds", HandlerListFeeds)
 	
 	if len(os.Args) < 2 {
 		log.Fatal("Error in arguments length")
