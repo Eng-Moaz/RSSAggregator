@@ -61,3 +61,32 @@ func HandlerFollowing (s *state, cmd Command) error {
 	}
 	return nil
 }
+
+func HandlerUnfollow(s *state, cmd Command) error {
+	if len(cmd.Args) <= 0 {
+		return fmt.Errorf("Invalid arguments length")
+	}
+
+	current_user, err := s.db.GetUser(context.Background(), s.cfg.USERNAME)
+	if err != nil{
+		return fmt.Errorf("Failed to get user: %v", err)
+	}
+
+	feedUrl := cmd.Args[0]
+	feed, err := s.db.GetFeedByUrl(context.Background(), feedUrl)
+	if err != nil{
+		return fmt.Errorf("Failed to get feed ID: %v", err)
+	}
+
+	params := database.DeleteFollowParams{
+		UserID : current_user.ID,
+		FeedID : feed.ID,
+	}
+	err = s.db.DeleteFollow(context.Background(), params)
+	if err != nil{
+		return fmt.Errorf("Failed to DeleteFollow: %v", err)
+	}
+
+	return nil
+	
+}
