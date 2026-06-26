@@ -21,8 +21,8 @@ func HandlerFollow(s *state, cmd Command) error {
 	}
 
 	current_feed, err := s.db.GetFeedByUrl(context.Background(), url)
-	if err != nil{
-		return fmt.Errorf("Failed to get feed: %v", err)
+	if err != nil {
+    	    return fmt.Errorf("Failed to get feed by url '%s': %v", url, err)
 	}
 
 	params := database.CreateFeedFollowParams{

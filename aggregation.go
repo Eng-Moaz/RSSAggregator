@@ -2,8 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
+
+	"github.com/Eng-Moaz/RSSAggregator/internal/database"
+	"github.com/google/uuid"
 )
 
 func scrapeFeeds(s *state) error {
@@ -23,9 +28,29 @@ func scrapeFeeds(s *state) error {
 	}
 
 	for _, post := range rssFeed.Channel.Item{
-		fmt.Println(post.Title)
+	parsedTime, err := time.Parse(time.RFC1123Z, post.PubDate)
+	if err != nil {
+    	    parsedTime, err = time.Parse(time.RFC1123, post.PubDate)
 	}
 
+	params := database.CreatePostParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Title: post.Title,
+		Url: post.Link,
+		Description: sql.NullString{String: post.Description, Valid: post.Description != ""},
+		PublishedAt: sql.NullTime{Time: parsedTime, Valid: err == nil,},
+		FeedID: feedToFetch.ID,
+		}		
+	_, err = s.db.CreatePost(context.Background(), params)
+	if err != nil{
+		fmt.Printf("failed to create post: %v", err)	
+		continue
+		}
+	}
+
+	 
 	return nil
 }
 
@@ -45,4 +70,29 @@ func HandlerAgg(s *state, cmd Command) error {
 	for ; ; <-ticker.C {
 			scrapeFeeds(s)
 	}
+	return nil
 } 
+
+func HandlerBrowse(s *state, cmd Command) error {
+	current_user, err := s.db.GetUser(context.Background(), s.cfg.USERNAME)
+	if err != nil{
+		return fmt.Errorf("Failed to create field: %v", err)
+	}
+	var limit int32 = 2
+	if len(cmd.Args) == 1 {
+    	    parsedLimit, err := strconv.Atoi(cmd.Args[0])
+    	    if err != nil {
+        	return fmt.Errorf("invalid limit provided: %v", err)
+    	    }
+    	    limit = int32(parsedLimit)
+	}
+	params := database.GetPostsForUserParams{
+		UserID: current_user.ID,
+		Limit: limit,
+	}
+	posts, err := s.db.GetPostsForUser(context.Background(), params)
+	for _, post := range posts{
+		fmt.Printf("Post Title: %v\n%v\n", post.Title, post.Description)
+	}
+	return nil
+}

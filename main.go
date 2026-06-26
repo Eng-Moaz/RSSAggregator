@@ -43,6 +43,7 @@ func main(){
 	cmds.register("follow", HandlerFollow)
 	cmds.register("following", HandlerFollowing)
 	cmds.register("unfollow", HandlerUnfollow)
+	cmds.register("browse", HandlerBrowse)
 	
 	if len(os.Args) < 2 {
 		log.Fatal("Error in arguments length")

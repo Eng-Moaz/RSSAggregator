@@ -18,7 +18,7 @@ func (c *Commands) run (s *state, cmd Command) error{
 	}
 	err := fc(s, cmd)
 	if err != nil{
-		return fmt.Errorf("Couldn't apply the function")
+		return fmt.Errorf("Couldn't apply the function: %w", err)
 	}
 	return nil
 }
